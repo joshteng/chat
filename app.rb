@@ -53,6 +53,6 @@ EventMachine.run do
 
   end
 
-  Chat.run!({:port => 3000}) 
+  Chat.run!({:port => 80}) 
 end
 
