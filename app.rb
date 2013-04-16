@@ -3,8 +3,9 @@ require_relative 'config/environment'
 $channel = EM::Channel.new
 
 EventMachine.run do
-  helpers
   class Chat < Sinatra::Base
+    helpers Sinatra::SessionHelper
+
     enable :sessions
     set :views, Proc.new { File.join(root, "app", "views") }
 
