@@ -18,26 +18,23 @@
       $('#chatarea').append("<li>"+evt.data+"</li>")
     };
     
-    ws.onclose = function() { 
-      ws.send("Leaves the chat");
-    };
+    // ws.onclose = function() { 
+    //   ws.send("Leaves the chat");
+    // };
     
-    ws.onopen = function() {
-      ws.send("Join the chat");
-    };
+    // ws.onopen = function() {
+    //   ws.send("Join the chat");
+    // };
     
     
     $("form#chat").submit(function(e) {
       var message = $("#msg").val();
+      var userId = "<%= current_user.id %>";
       if(message.length > 0){
-        ws.send(message);
+        ws.send(message + "<" + userId + ">");
         $("#msg").val("");
       }
       return false;
-    });
-    
-    $("#clear").click( function() {
-      $('#chat tbody tr').remove();
     });
     
   });

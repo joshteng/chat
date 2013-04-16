@@ -3,6 +3,7 @@ require_relative 'config/environment'
 $channel = EM::Channel.new
 
 EventMachine.run do
+
   class Chat < Sinatra::Base
     helpers Sinatra::SessionHelper
 
@@ -20,6 +21,7 @@ EventMachine.run do
     end
 
     get '/chat/:user_id' do
+      puts current_user
       @user = User.find_by_id(params[:user_id])
       login(@user)
       erb :chat
@@ -27,13 +29,21 @@ EventMachine.run do
   end
 
   EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8080) do |ws|
+    def current_user(id) #this is a hack. I should refine
+      User.find_by_id(id)
+    end
+
+
     ws.onopen {
       sid = $channel.subscribe { |msg| ws.send msg }
-      $channel.push "#{current_user.username} connected!"
+      $channel.push "#{sid} connected!"
 
       ws.onmessage { |msg|
-        current_user.messages.create(body: msg)
-        $channel.push "#{current_user.username}: #{msg}"
+        user_id = msg.match(/<\d+>/).to_s[1..-2] #this is a hack. I should refine this.
+        user = current_user(user_id)
+        msg.gsub!(/<\d+>/, "")
+        user.messages.create(body: msg)
+        $channel.push "#{user.username}: #{msg}"
       }
 
       ws.onclose {

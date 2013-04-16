@@ -9,7 +9,7 @@ module Sinatra
     end
 
     def login?
-      current_user ? true : false
+      self.current_user ? true : false
     end
   end
   helpers SessionHelper
